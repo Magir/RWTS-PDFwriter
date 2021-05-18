@@ -259,6 +259,7 @@ static void replace_string(char *string) {
 
 static int preparetitle(char *title) {
     char *cut;
+    char *cut2;
     
     if (title != NULL) {
         log_event(CPDEBUG, "removing trailing newlines from title", title);
@@ -284,6 +285,11 @@ static int preparetitle(char *title) {
     if ((cut != NULL) && ((int)strlen(cut) <= conf.cut+1) && (cut != title)) {
         log_event(CPDEBUG, "removing file name extension", cut);
         cut[0]='\0';
+    }
+
+    cut2 = strchr(title, '-');
+    if (cut != NULL) {
+        memmove(title, cut2+2, strlen(cut2+2)+1);
     }
 
     replace_string(title);
@@ -444,11 +450,11 @@ int main(int argc, char *argv[]) {
         cmdtitle="";
     
     if (!preparetitle(cmdtitle)) {
-        snprintf(title, BUFSIZE, "job_%i untitled_document", job);
+        snprintf(title, BUFSIZE, "untitled_document_%i", job);
         log_event(CPDEBUG, "no title found - using default value", title);
     }
     else {
-        snprintf(title, BUFSIZE, "job_%i %s", job, cmdtitle);
+        snprintf(title, BUFSIZE, "%s", cmdtitle);
         log_event(CPDEBUG, "title successfully retrieved", title);
     }
 
